@@ -1,0 +1,8 @@
+[Webserver]
+ansible2
+ansible3
+
+[LoadBalancer]
+loadbalancer
+ 
+

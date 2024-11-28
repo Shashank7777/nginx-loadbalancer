@@ -1,0 +1,26 @@
+---
+- name: Configure Nginx as a Loadbalancer
+  hosts: loadbalancer
+  vars:
+    backend_servers:
+      - ansible2
+      - ansible3
+    upstream_name: "webservers"
+
+  tasks:
+    - name: Install nginx if not already installed
+      yum:
+        name: nginx
+        state: present
+
+    - name: configure nginx as a loadbalancer
+      template:
+        src: loadbalancer_nginx.conf.j2
+        dest: /etc/nginx/nginx.conf
+        mode: '0644'
+
+    - name: Ensure nginx service is started and enabled. 
+      service:
+        name: nginx
+        state: started
+        enabled: yes

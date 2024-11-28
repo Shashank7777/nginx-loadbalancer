@@ -1,0 +1,35 @@
+---
+- name: Install nginx on the loadbalancer
+  hosts: loadbalancer
+  vars:
+    nginx_msg: "Welcome to Nginx - {{ ansible_hostname }}"
+  tasks:
+    - name: Install nginx package
+      package:
+        name: nginx
+        state: present
+    - name: Ensure Nginx service is started
+      service:
+        name: nginx
+        state: started
+        enabled: yes
+    - name: Allow HTTP service through the firewall
+      firewalld:
+        service: http
+        permanent: yes
+        state: enabled
+        zone: public
+    - name: Reload the firewall
+      command: firewall-cmd --reload
+    - name: Create a custom index.html file
+      copy:
+        dest: /usr/share/nginx/html/index.html
+        content: "{{ nginx_msg }}"
+        owner: nginx
+        group: nginx
+        mode: '0644'
+      notify:
+        - Restart nginx
+  handlers:
+    - name: Restart nginx
+      command: systemctl restart nginx
